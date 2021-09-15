@@ -1,0 +1,13 @@
+<Simulacion>
+ <Nombre>
+ simulacion1
+ </Nombre>
+ <ListadoProductos>
+ <Producto>
+ cel
+ </Producto>
+ <Producto>
+ cel2
+ </Producto>
+ </ListadoProductos>
+</Simulacion>
