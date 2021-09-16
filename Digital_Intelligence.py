@@ -4,6 +4,7 @@ from Product import Product
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
+from tkinter.ttk import Combobox
 from xml.dom import minidom
 import re
 from tkinter.filedialog import askopenfilename
@@ -12,6 +13,7 @@ from Product_Linked_List import Product_Linked_List
 production_lines_counter=0
 line_linked_list_handler = Line_Linked_list()
 product_linked_list_handler=Product_Linked_List()
+
 #============================================================================================================
 #Creación de la raíz aplicando algunos atributos
 root=Tk()
@@ -82,7 +84,14 @@ exit_Button.grid(row=0,column=4,padx=10)
 selection_frame=Frame(root,width="200",height="100")
 selection_frame.config(bg="skyblue")
 selected_item = StringVar()
-item_selector=ttk.Combobox(selection_frame,textvariable=selected_item,values=["0","1","2"],state="readonly",width="20",height="20")
+item_combobox=Combobox(selection_frame,width="50",state="readonly")
+item_combobox.grid(row=0,column=0)
+product_search_button=Button(selection_frame,text="Buscar Producto",font=("Comic Sans MS",10),bg="black",fg="yellow")
+product_search_button.grid(row=1,column=0,pady=10)
+
+product_delete_button=Button(selection_frame,text="Vaciar datos",font=("Comic Sans MS",10),bg="black",fg="yellow")
+product_delete_button.grid(row=2,column=0,pady=10)
+
 #============================================================================================================
 
 
@@ -91,10 +100,15 @@ item_selector=ttk.Combobox(selection_frame,textvariable=selected_item,values=["0
 #============================================================================================================
 #Creación del frame donde se muestran el proceso
 process_frame=Frame(root,width="600",height="400")
-process_frame.config(bg="old lace")
+process_frame.config(bg="MidnightBlue")
 process_frame.config(bd="20")
 process_frame.config(relief="groove")
 process_frame.config(cursor="hand2")
+item_name=Label(process_frame,text="Producto:",fg="old lace",font=("Comic Sans MS",30),bg="MidnightBlue").place(x=10,y=20)
+item_components=Label(process_frame,text="Componentes:",fg="old lace",font=("Comic Sans MS",30),bg="MidnightBlue").place(x=10,y=100)
+item_process=Label(process_frame,text="Bar:",fg="old lace",font=("Comic Sans MS",30),bg="MidnightBlue").place(x=10,y=180)
+
+
 #============================================================================================================
 
 
@@ -153,11 +167,13 @@ information_Button.config(command=student_information)
 #============================================================================================================
 #Función que muestra información del estudiante
 def machine_upload_file():
+    global item_combobox
     route = askopenfilename()
     if route.endswith("xml"):
         archive = open(route,"r")
         archive.close()
         machine_file(route)
+        item_combobox.config(values=product_linked_list_handler.collected_names.split(","))
         messagebox.showinfo(title="Digital Intelligence V1.0",message="El archivo de máquina fue cargado con éxito al sistema!!")
     else:
         messagebox.showerror(title="Digital Intelligence V1.0",message="No es un archivo con extensión 'xml', intenta de nuevo!!")
@@ -166,7 +182,7 @@ def machine_upload_file():
 machine_upload_button.config(command=machine_upload_file)
 #============================================================================================================
 
-
+#============================================================================================================
 def machine_file(route):
     global production_lines_counter
 
@@ -232,6 +248,86 @@ def machine_file(route):
     line_linked_list_handler.travel()
     print("")
     product_linked_list_handler.travel()
+    product_linked_list_handler.product_name_list_collector()
+    #============================================================================================================
+
+#============================================================================================================
+bar=StringVar()
+name=StringVar()
+components=StringVar()
+def product_information():
+
+    global item_combobox,name,bar,components
+    temp_components=""
+    temp_bar=""
+    
+    components_collected=""
+    bar_collected=""
+    state=0
+    state_=0
+    buffer=""
+    name.set(item_combobox.get())
+    temp_bar=product_linked_list_handler.product_elaboration(item_combobox.get())
+    temp_components=product_linked_list_handler.product_component(item_combobox.get())
+    temp_components.replace(" ",",")
+    temp_components+="("
+    temp_bar+="("
+
+    
+
+    for g in temp_components:
+        if state==0:
+            if g=="C":
+                state=1
+            elif g=="L":
+                buffer+=g
+                buffer=""
+            elif g=="(":
+                break
+        if state==1:
+            if g=="C" or g.isdigit() or g==",":
+                components_collected+=g
+            else:
+                components_collected+=","
+                state=0
+    for f in temp_bar:
+        if state_==0:
+            if f=="L":
+                state_=1
+            elif f=="(":
+                break
+        if state_==1:
+            if f =="L" or f.isdigit() or f=="C":
+                bar_collected+=f
+            else:
+                bar_collected+="=>"
+                state_=0
+    bar.set(bar_collected)
+    components.set(components_collected)
+    Label(process_frame,textvariable=name,fg="old lace",font=("Comic Sans MS",30),bg="MidnightBlue").place(x=200,y=20)
+    Label(process_frame,textvariable=components,fg="old lace",font=("Comic Sans MS",10),bg="MidnightBlue").place(x=270,y=140)
+    Label(process_frame,textvariable=bar,fg="old lace",font=("Comic Sans MS",10),bg="MidnightBlue").place(x=100,y=220)
+
+
+
+product_search_button.config(command=product_information)
+
+
+#============================================================================================================
+
+
+
+#============================================================================================================
+def delete_information():
+    global name,components,bar
+    name.set("")
+    bar.set("")
+    components.set("")
+
+product_delete_button.config(command=delete_information)
+#============================================================================================================
+
+
 
 
 #============================================================================================================
