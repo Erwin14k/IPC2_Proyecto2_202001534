@@ -292,9 +292,12 @@ def grapviz_creator():
     text+=product_name+"""->"""
     current2 = elaboration_handler.first
     while current2 and current2.product_name == product_name:
-        text+=current2.elaboration
-        text+="""->"""
-        current2=current2.next_one
+        if current2.product_name == product_name:
+            text+=current2.elaboration
+            text+="""->"""
+            current2=current2.next_one
+        else:
+            current2=current2.next_one
     text+="""End_Product_Process;
     """+product_name+"""[shape=Mdiamond];
 	End_Product_Process [shape=Mdiamond];
