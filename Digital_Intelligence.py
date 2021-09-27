@@ -291,7 +291,7 @@ def grapviz_creator():
 	}"""
     text+=product_name+"""->"""
     current2 = elaboration_handler.first
-    while current2 and current2.product_name == product_name:
+    while current2:
         if current2.product_name == product_name:
             text+=current2.elaboration
             text+="""->"""
