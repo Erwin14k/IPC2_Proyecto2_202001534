@@ -1,0 +1,10 @@
+digraph G {
+	subgraph cluster_0 {
+		style=filled;
+		color=lightgrey;
+		node [style=filled,color=white];
+		label = "process #1";
+	}USBStick->L1C1->L2C3->End_Product_Process;
+    USBStick[shape=Mdiamond];
+	End_Product_Process [shape=Mdiamond];
+    }
